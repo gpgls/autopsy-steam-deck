@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+title: Steam Deck Analyzer
+message: "If you refer to this software, please cite the corresponding paper."
+type: software
+keywords:
+  - Digital Forensics
+  - Gaming Console Forensics
+  - Steam Deck
+  - Steam client
+  - SteamOS
+license: MIT
+preferred-citation:
+  type: article
+  authors:
+    - family-names: "Eichhorn"
+      given-names: "Maximilian"
+    - family-names: "Schneider"
+      given-names: "Janine"
+    - family-names: "Pugliese"
+      given-names: "Gaston"
+  doi: "10.1016/j.fsidi.2023.301688"
+  journal: "Forensic Science International: Digital Investigation"
+  month: 3
+  start: 1
+  end: 10
+  title: "Well Played, Suspect! — Forensic Examination of the Handheld Gaming Console “Steam Deck”"
+  volume: 48
+  year: 2024

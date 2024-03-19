@@ -1,0 +1,17 @@
+"body"
+{
+    "head"    "skull"
+    "torso"
+    {
+        "upper"
+        {
+            "arm1"    "left"
+            "arm2"    "right"
+        }
+        "lower"
+        {
+            "leg1"    "left"
+            "leg2"    "right"
+        }
+    }
+}

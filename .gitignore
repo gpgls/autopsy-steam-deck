@@ -1,0 +1,12 @@
+.vscode/*
+SteamDeckAnalyzer/assets/apps_latest.json
+
+__pycache__/
+*.py[cod]
+*$py.class
+.venv
+venv/
+
+.DS_Store
+.AppleDouble
+.LSOverride

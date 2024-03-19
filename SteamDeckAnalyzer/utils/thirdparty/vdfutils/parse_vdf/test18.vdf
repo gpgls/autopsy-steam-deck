@@ -1,0 +1,54 @@
+"foo"    "these"
+"foo"    "keys"
+"foo"    "repeat"
+"bar"
+{
+    "this"  "repeats"
+}
+"bar"
+{
+    "this"  "repeats"
+    "yet"   "again"
+}
+"bar"
+{
+    "and"   "again"
+}
+"spam"
+{
+    "id"    "0"
+    "nested"
+    {
+        "id"    "0"
+        "repeating" "keys"
+    }
+    "nested"
+    {
+        "id"    "1"
+        "repeating" "keys"
+    }
+    "nested"
+    {
+        "id"    "2"
+        "repeating" "keys"
+    }
+}
+"spam"
+{
+    "id"    "1"
+    "nested"
+    {
+        "id"    "0"
+        "repeating" "keys"
+    }
+    "nested"
+    {
+        "id"    "1"
+        "repeating" "keys"
+    }
+    "nested"
+    {
+        "id"    "2"
+        "repeating" "keys"
+    }
+}

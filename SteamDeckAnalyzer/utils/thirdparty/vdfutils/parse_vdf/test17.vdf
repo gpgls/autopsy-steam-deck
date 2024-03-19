@@ -1,0 +1,7 @@
+"unescaped"
+{
+    "tab"           "\t"
+    "newline"       "\n"
+    "backslash"     "\\"
+    "everything"    "\t\n\"\\\\\"\n\t"
+}

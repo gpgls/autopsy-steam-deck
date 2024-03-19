@@ -1,0 +1,8 @@
+"escaped"
+{
+    "tab"           "\t"
+    "newline"       "\n"
+    "quote"         "\""
+    "backslash"     "\\"
+    "everything"    "\t\n\"\\\\\"\n\t"
+}
