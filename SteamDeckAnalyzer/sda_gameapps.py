@@ -110,7 +110,6 @@ class SteamDeckGameAppsDSIM(DataSourceIngestModulePlus):
 
         sources = {}
         for file in self.files:
-
             if self.is_job_cancelled():
                 return IngestModule.ProcessResult.OK
 
@@ -272,23 +271,6 @@ class SteamDeckGameAppsDSIM(DataSourceIngestModulePlus):
                     info[key] = str(d_v[key])
             software_app_ids[app_id] = info
 
-        # sanity check for last playtime
-        assert "LastPlayedTimesSyncTime" in data, "{}".format(sorted(data.keys()))
-        sanity_check = False
-        for app_id, appdata in software_app_ids.items():
-            if "lastplayed" in appdata:
-                if appdata["lastplayed"] == data["LastPlayedTimesSyncTime"]:
-                    sanity_check = True
-                    break
-            if "autocloud_lastexit" in appdata:
-                if appdata["autocloud_lastexit"] == data["LastPlayedTimesSyncTime"]:
-                    sanity_check = True
-                    break
-            if "autocloud_lastlaunch" in appdata:
-                if appdata["autocloud_lastlaunch"] == data["LastPlayedTimesSyncTime"]:
-                    sanity_check = True
-                    break
-
         # summarize app IDs and app information found in localconfig.vdf
         app_ids = sorted(set(itertools.chain(
             apptickets_app_ids, nettickets_app_ids, software_app_ids.keys()
@@ -364,25 +346,27 @@ class SteamDeckGameAppsDSIM(DataSourceIngestModulePlus):
         
         return dict_apps
 
-    def lowercase_keys(self,obj):
+    def __make_lowercase_keys_dict(self, obj):
         if isinstance(obj, dict):
-            obj={key.lower():value for key, value in obj.items()}
+            obj = {key.lower(): value for key, value in obj.items()}
             for key, value in obj.items():
                 if isinstance(value, list):
                     for idx, item in enumerate(value):
-                        value[idx]=self.lowercase_keys(item)
-                obj[key]=self.lowercase_keys(value)
+                        value[idx] = self.__make_lowercase_keys_dict(item)
+                obj[key] = self.__make_lowercase_keys_dict(value)
         return obj
 
     def __parse_appmanifest_acf(self, dict_appmanifest):
-        lc_dict=self.lowercase_keys(dict_appmanifest)
         assert isinstance(dict_appmanifest, OrderedDict) or isinstance(dict_appmanifest, dict), \
             "{}".format(type(dict_appmanifest))
-        assert "appstate" in lc_dict, "{}".format(json.dumps(dict_appmanifest))
-        assert "lastowner" in lc_dict["appstate"], "{}".format(json.dumps(dict_appmanifest))
-        assert "lastupdated" in lc_dict["appstate"], "{}".format(json.dumps(dict_appmanifest))
-        assert "appid" in lc_dict["appstate"], "{}".format(json.dumps(dict_appmanifest))
-        assert "name" in lc_dict["appstate"], "{}".format(json.dumps(dict_appmanifest))
+
+        lc_dict = self.__make_lowercase_keys_dict(dict_appmanifest)
+
+        assert "appstate" in lc_dict, "{} > {}".format(json.dumps(dict_appmanifest), json.dumps(lc_dict))
+        assert "lastowner" in lc_dict["appstate"], "{} > {}".format(json.dumps(dict_appmanifest), json.dumps(lc_dict))
+        assert "lastupdated" in lc_dict["appstate"], "{} > {}".format(json.dumps(dict_appmanifest), json.dumps(lc_dict))
+        assert "appid" in lc_dict["appstate"], "{} > {}".format(json.dumps(dict_appmanifest), json.dumps(lc_dict))
+        assert "name" in lc_dict["appstate"], "{} > {}".format(json.dumps(dict_appmanifest), json.dumps(lc_dict))
 
         dict_app = {}
         dict_app[str(lc_dict["appstate"]["appid"])] = {
