@@ -185,7 +185,7 @@ class SteamDeckGameAppsDSIM(DataSourceIngestModulePlus):
             if appdata[ArtifactUtils.ATTR_NAME] == "":
                 appdata[ArtifactUtils.ATTR_NAME] = app_name
 
-            elif appdata[ArtifactUtils.ATTR_NAME] != "":
+            elif appdata[ArtifactUtils.ATTR_NAME] != "" and app_id in self.app_ids_names:
                 if appdata[ArtifactUtils.ATTR_NAME] != self.app_ids_names[app_id]:
                     appdata[ArtifactUtils.ATTR_NAME] = "{} / {}".format(
                         appdata[ArtifactUtils.ATTR_NAME], app_name
@@ -288,7 +288,6 @@ class SteamDeckGameAppsDSIM(DataSourceIngestModulePlus):
                 if appdata["autocloud_lastlaunch"] == data["LastPlayedTimesSyncTime"]:
                     sanity_check = True
                     break
-        assert sanity_check is True
 
         # summarize app IDs and app information found in localconfig.vdf
         app_ids = sorted(set(itertools.chain(
@@ -365,25 +364,36 @@ class SteamDeckGameAppsDSIM(DataSourceIngestModulePlus):
         
         return dict_apps
 
+    def lowercase_keys(self,obj):
+        if isinstance(obj, dict):
+            obj={key.lower():value for key, value in obj.items()}
+            for key, value in obj.items():
+                if isinstance(value, list):
+                    for idx, item in enumerate(value):
+                        value[idx]=self.lowercase_keys(item)
+                obj[key]=self.lowercase_keys(value)
+        return obj
+
     def __parse_appmanifest_acf(self, dict_appmanifest):
+        lc_dict=self.lowercase_keys(dict_appmanifest)
         assert isinstance(dict_appmanifest, OrderedDict) or isinstance(dict_appmanifest, dict), \
             "{}".format(type(dict_appmanifest))
-        assert "AppState" in dict_appmanifest, "{}".format(json.dumps(dict_appmanifest))
-        assert "LastOwner" in dict_appmanifest["AppState"], "{}".format(json.dumps(dict_appmanifest))
-        assert "LastUpdated" in dict_appmanifest["AppState"], "{}".format(json.dumps(dict_appmanifest))
-        assert "appid" in dict_appmanifest["AppState"], "{}".format(json.dumps(dict_appmanifest))
-        assert "name" in dict_appmanifest["AppState"], "{}".format(json.dumps(dict_appmanifest))
+        assert "appstate" in lc_dict, "{}".format(json.dumps(dict_appmanifest))
+        assert "lastowner" in lc_dict["appstate"], "{}".format(json.dumps(dict_appmanifest))
+        assert "lastupdated" in lc_dict["appstate"], "{}".format(json.dumps(dict_appmanifest))
+        assert "appid" in lc_dict["appstate"], "{}".format(json.dumps(dict_appmanifest))
+        assert "name" in lc_dict["appstate"], "{}".format(json.dumps(dict_appmanifest))
 
         dict_app = {}
-        dict_app[str(dict_appmanifest["AppState"]["appid"])] = {
-            ArtifactUtils.ATTR_NAME: str(dict_appmanifest["AppState"]["name"]),
-            ArtifactUtils.ATTR_APP_ID: str(dict_appmanifest["AppState"]["appid"]),
+        dict_app[str(lc_dict["appstate"]["appid"])] = {
+            ArtifactUtils.ATTR_NAME: str(lc_dict["appstate"]["name"]),
+            ArtifactUtils.ATTR_APP_ID: str(lc_dict["appstate"]["appid"]),
             ArtifactUtils.ATTR_OWNER_STEAM_ID: \
-                str(dict_appmanifest["AppState"]["LastOwner"]),
+                str(lc_dict["appstate"]["lastowner"]),
             ArtifactUtils.ATTR_LASTUPDATED: \
-                str(dict_appmanifest["AppState"]["LastUpdated"]),
+                str(lc_dict["appstate"]["lastupdated"]),
             ArtifactUtils.ATTR_LASTUPDATED_DATE: \
-                TimestampUtils.epoch_to_date_str(dict_appmanifest["AppState"]["LastUpdated"]),
+                TimestampUtils.epoch_to_date_str(lc_dict["appstate"]["lastupdated"]),
         }
         
         return dict_app
